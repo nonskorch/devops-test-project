@@ -1,3 +1,5 @@
+import * as process from 'process';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
@@ -17,7 +19,7 @@ async function bootstrap() {
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('template API')
+    .setTitle(process.env.SERVICE_NAME || 'wrong name')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
