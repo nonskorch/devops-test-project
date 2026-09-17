@@ -1,0 +1,27 @@
+services:
+  # Наше приложение
+  app:
+    # Собираем образ из Dockerfile в текущей папке
+    build: .
+    container_name: devops-test-app
+    environment:
+      # Отсюда берётся имя сервиса в Swagger (src/main.ts)
+      SERVICE_NAME: Successful task
+    # Портов наружу нет — по заданию доступ только через Nginx
+    restart: unless-stopped
+
+  # Nginx принимает запросы снаружи и передаёт их приложению
+  nginx:
+    image: nginx:alpine
+    container_name: devops-test-nginx
+    ports:
+      # 8080 на машине  80 внутри контейнера nginx
+      - "8080:80"
+    volumes:
+      # Подкладываем наш конфиг внутрь контейнера, :ro — только чтение
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    # Не стартуем, пока не запустится приложение
+    depends_on:
+      - app
+      #   # Поднимать контейнер обратно, если упал
+    restart: unless-stopped
